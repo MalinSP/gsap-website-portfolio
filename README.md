@@ -1,3 +1,9 @@
+## Fonts
+
+1. Cairo
+2. Nobile
+3. Signika Negative
+
 <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
 <p align="center">
   <a href="https://www.gatsbyjs.com">
