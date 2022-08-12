@@ -6,10 +6,12 @@ import { Header, Hero, Footer, Menu } from "../components/"
 export default function Home() {
   return (
     <div>
-      <Menu />
-      <Header />
-      <Hero />
-      <Footer />
+      <React.StrictMode>
+        <Menu />
+        <Header />
+        <Hero />
+        <Footer />
+      </React.StrictMode>
     </div>
   )
 }
