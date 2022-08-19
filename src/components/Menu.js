@@ -1,25 +1,55 @@
-import React, { useContext, useEffect, useLayoutEffect } from "react"
+import React, { useContext, useEffect, useLayoutEffect, useRef } from "react"
 import styled from "styled-components"
 import { RecentProjects } from "../components"
 import { Link } from "gatsby"
-import { formatAMPM } from "../functions/time.js"
-import { GatsbyContext } from "../context/context"
+import { formatAMPM } from "../functions/functions.js"
+import { GatsbyContext, useArrayRef } from "../context/context"
 import gsap from "gsap"
 
 const Menu = () => {
-  const { isMenuOpen, tlShowSidebar, navTopRef, logoRef, setRef, refs } =
+  const { isMenuOpen, tlShowSidebar, navTopRef, setRef, refs, wordRef } =
     useContext(GatsbyContext)
+  const [titlesRef, setTitlesRef] = useArrayRef()
+  const [navLinksRef, setNavLinksRef] = useArrayRef()
+
+  const recentRef = useRef()
 
   useLayoutEffect(() => {
+    const getAllProjects = gsap.utils.toArray(".bg")
+    const getAllImages = gsap.utils.toArray(".project-img")
+    const getAllArrows = gsap.utils.toArray(".arrow-icon")
+    gsap.set(getAllImages, {
+      autoAlpha: 0,
+      x: -40,
+      scale: 1.2,
+    })
+    gsap.set(getAllArrows, {
+      autoAlpha: 0,
+      x: 40,
+      scale: 0.7,
+    })
+    gsap.set(getAllProjects, {
+      width: 0,
+      autoAlpha: 0,
+    })
+
     tlShowSidebar.current = gsap
       .timeline({ paused: true })
+      .set("body", { overflow: "hidden" })
       .to(navTopRef.current, {
-        backgroundColor: "#1a2323",
+        y: 0,
         duration: 1,
-        ease: "power4.Out",
+        ease: "power3.inOut",
       })
-      .to(logoRef.current, { color: "#f7ede2", duration: 1 }, "<=0.5")
-      .to(".hamburger-menu p", { color: "#f7ede2", duration: 1 }, 0)
+      .to(
+        ".menu",
+        {
+          x: 0,
+        },
+        0
+      )
+      .to(".logo-icon", { color: "#f7ede2", duration: 1 }, "<=0.7")
+      .to(wordRef.current, { color: "#f7ede2", duration: 1 }, 0)
       .to(
         refs.current,
         {
@@ -28,22 +58,12 @@ const Menu = () => {
           stagger: {
             amount: 0.4,
           },
-          ease: "power2.InOut",
+          ease: "expo.inOut",
         },
         "<=0.5"
       )
       .to(
-        ".top h6 span",
-        {
-          y: 0,
-          ease: "power4.inOut",
-          // skewY: 7,
-          duration: 1.2,
-        },
-        "<=0.9"
-      )
-      .to(
-        ".top ul li a span",
+        navLinksRef.current,
         {
           y: 0,
           // autoAlpha: 0,
@@ -53,64 +73,110 @@ const Menu = () => {
             amount: 0.4,
           },
         },
-        "<"
+        "<=1.5"
       )
+      .to(
+        recentRef.current,
+        {
+          yPercent: -100,
+          duration: 1.2,
+          ease: "power4.inOut",
+        },
+        "<=0.7"
+      )
+      .to(
+        getAllProjects,
+        {
+          autoAlpha: 1,
+          width: "100%",
+          duration: 1,
+        },
+        "<=0.5"
+      )
+      .to(
+        titlesRef.current,
+        {
+          y: 0,
+          duration: 1,
+        },
+        "<=0.2"
+      )
+      .to(getAllArrows, { autoAlpha: 1, x: 0, scale: 1, duration: 1 }, "<=0.5")
+      .to(getAllImages, { autoAlpha: 1, x: 0, scale: 1, duration: 1 }, "<=0.5")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     isMenuOpen ? tlShowSidebar.current.play() : tlShowSidebar.current.reverse()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMenuOpen])
 
   return (
     <>
       <Wrapper className="menu">
-        {/* <div className="nav-top"></div> */}
         <div className="top" ref={setRef}>
           <div className="wrapper">
             <h6>
-              <span>Navigation</span>
+              <span ref={setNavLinksRef}>Navigation</span>
             </h6>
             <ul>
               <li>
                 <Link to="/">
-                  <span>Home</span>
+                  <span ref={setNavLinksRef}>Home</span>
                 </Link>
               </li>
               <li>
                 <Link to="/">
-                  <span>About</span>
+                  <span ref={setNavLinksRef}>About</span>
                 </Link>
               </li>
               <li>
                 <Link to="/">
-                  <span>Projects</span>
+                  <span ref={setNavLinksRef}>Projects</span>
                 </Link>
               </li>
               <li>
                 <Link to="/">
-                  <span>Contacts</span>
+                  <span ref={setNavLinksRef}>Contacts</span>
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <RecentProjects ref={setRef} />
+        <RecentProjects
+          ref={setRef}
+          recentRef={recentRef}
+          setTitlesRef={setTitlesRef}
+        />
         <div className="bottom" ref={setRef}>
           <div className="wrapper mid-container">
             <div className="socials">
-              <h6>Socials</h6>
+              <h6>
+                <span ref={setNavLinksRef}> Socials</span>
+              </h6>
               <a href="http://">
-                {/* <ImLinkedin2 /> */}
-                LinkedIn
+                <span ref={setNavLinksRef}>LinkedIn</span>
               </a>
-              <a href="http://">GitHub</a>
-              <a href="http://">Facebook</a>
+              <a href="http://">
+                <span ref={setNavLinksRef}>GitHub</span>
+              </a>
+              <a href="http://">
+                <span ref={setNavLinksRef}>Facebook</span>
+              </a>
             </div>
             <div className="contacts">
-              <h6>Contacts</h6>
-              <a href="http://">Write me in Facebook</a>
-              <a href="http://">Email me</a>
-              <a href="http://">sergio.malin@gmail.com</a>
+              <h6>
+                <span ref={setNavLinksRef}> Contacts </span>
+              </h6>
+              <a href="http://">
+                <span ref={setNavLinksRef}>Write me in Facebook</span>
+              </a>
+              <a href="http://">
+                <span ref={setNavLinksRef}>Email me</span>
+              </a>
+              <a href="http://">
+                <span ref={setNavLinksRef}>sergio.malin@gmail.com</span>
+              </a>
             </div>
             <div className="info">
               <span>
@@ -129,26 +195,33 @@ const Menu = () => {
 }
 
 const Wrapper = styled.section`
-  position: absolute;
-  top: 10vh;
+  /* display: none; */
+  position: fixed;
+  top: 90px;
   right: 0;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: auto;
-  background: #f7ede2;
-  /* z-index: 2; */
+  z-index: 2;
   display: grid;
-  overflow: scroll;
-  /* transform: translateX(100%); */
-  /* visibility: hidden; */ /* overflow: auto; */
-  /* transform: translateX(100%); */ /* visibility: hidden; */
-  /* margin-top: 10vh; */
+  height: calc(100vh - 90px);
+  overflow-y: scroll;
+  background-color: transparent;
+  display: block;
+  transform: translateX(100%);
+  /* overflow: scroll; */
+  /* background: #f7ede2;
+  
+  /* visibility: hidden; */ /* overflow-y: scroll; */ /* overflow: scroll; */
+  /* transform: translateX(90%); */ /* visibility: hidden; */
+  /* overflow: auto; */ /* transform: translateX(100%); */
+  /* visibility: hidden; */ /* margin-top: 10vh; */
   .nav-top {
     /* background: transparent; */
     /* background-color: #1a2323; */
     padding-top: 3rem;
     padding-bottom: 3rem;
+    height: 90px;
     /* height: 10vh; */
     /* transform: translateX(100%); */
   }
@@ -236,12 +309,23 @@ const Wrapper = styled.section`
         display: grid;
         font-size: clamp(0.8rem, 1.5vw, 4rem);
         gap: 0.2rem;
+        h6 {
+          overflow: hidden;
+          display: block;
+          span {
+            transform: translateY(100%);
+            display: block;
+          }
+        }
 
         a {
           color: #d0dcdc;
-          /* display: flex;
-          align-items: center; */
-
+          overflow: hidden;
+          display: block;
+          span {
+            transform: translateY(100%);
+            display: block;
+          }
           svg {
             margin-right: 1rem;
             font-size: 1.2rem;
@@ -253,8 +337,22 @@ const Wrapper = styled.section`
         display: grid;
         gap: 0.2rem;
         font-size: clamp(0.8rem, 1.5vw, 4rem);
+        h6 {
+          overflow: hidden;
+          display: block;
+          span {
+            transform: translateY(100%);
+            display: block;
+          }
+        }
         a {
           color: #d0dcdc;
+          overflow: hidden;
+          display: block;
+          span {
+            transform: translateY(100%);
+            display: block;
+          }
         }
       }
       .info {

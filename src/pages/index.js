@@ -1,17 +1,16 @@
 import React from "react"
 import "../css/reset.css"
 import "../css/main.css"
-import { Header, Hero, Footer, Menu } from "../components/"
+import { Header, Hero, Footer, Menu, Projects } from "../components/"
 
 export default function Home() {
   return (
-    <div>
-      <React.StrictMode>
-        <Menu />
-        <Header />
-        <Hero />
-        <Footer />
-      </React.StrictMode>
-    </div>
+    <React.StrictMode>
+      <Header />
+      <Menu />
+      <Hero />
+      <Footer />
+      <Projects />
+    </React.StrictMode>
   )
 }

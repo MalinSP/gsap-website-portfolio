@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react"
+import React, { useLayoutEffect, useRef } from "react"
 import styled from "styled-components"
 import gsap from "gsap"
 
@@ -49,6 +49,9 @@ const Wrapper = styled.section`
   place-items: center;
   height: 80vh;
   z-index: 2;
+  overflow-y: hidden;
+  /* position: relative;
+  overflow: hidden; */
   .hero {
     width: 100%;
     max-width: 1350px;

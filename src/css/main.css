@@ -10,7 +10,9 @@
 html {
   font-size: 100%;
 } /*16px*/
-
+:root {
+  --black: #000000;
+}
 body {
   background: #f7ede2;
   font-family: "Signika Negative", sans-serif;
@@ -18,7 +20,9 @@ body {
   line-height: 1.75;
   color: #2a3f51;
   z-index: 1;
-  /* overflow: hidden; */
+  overflow-x: hidden;
+  position: relative;
+  scroll-behavior: smooth;
 }
 
 p {

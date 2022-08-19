@@ -24,25 +24,31 @@ export const query = graphql`
   }
 `
 
-const RecentProjects = forwardRef((props, ref) => {
+const RecentProjects = forwardRef(({ recentRef, setTitlesRef }, ref) => {
   const data = useStaticQuery(query)
   const featuredProjects = data.allContentfulMalinaPortfolio.nodes
 
   return (
     <Wrapper className="recent-projects" ref={ref}>
       <div className="projects-container">
-        <aside>Recent projects</aside>
+        <aside>
+          <span ref={recentRef}>Recent projects</span>
+        </aside>
         {featuredProjects.map(featureProject => {
           const { id, projectUrl, title, image } = featureProject
           const pathToImage = getImage(image)
           return (
             <article key={id} className="project">
+              <hr className="bg" />
               <div className="project-info">
-                <h5>{title}</h5>
-                <a href={projectUrl}>
+                <h5>
+                  <span ref={setTitlesRef}>{title}</span>
+                </h5>
+                <a href={projectUrl} className="arrow-icon">
                   <FiArrowUpRight />
                 </a>
               </div>
+
               <GatsbyImage
                 image={pathToImage}
                 className="project-img"
@@ -87,15 +93,24 @@ const Wrapper = styled.div`
       font-size: 1.2rem;
       letter-spacing: -0.01rem;
       font-weight: 400;
+      display: block;
+      overflow: hidden;
+      span {
+        display: block;
+        position: relative;
+        transform: translateY(100%);
+      }
     }
     .project {
       display: grid;
       gap: 1rem;
       cursor: pointer;
       position: relative;
-      :before {
+      .bg {
         position: absolute;
-        top: 0px;
+        top: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         content: " ";
         height: 1px;
@@ -109,6 +124,12 @@ const Wrapper = styled.div`
         justify-content: space-between;
         h5 {
           letter-spacing: -0.02rem;
+          overflow: hidden;
+          display: block;
+          span {
+            display: block;
+            transform: translateY(100%);
+          }
         }
         a {
           position: relative;
