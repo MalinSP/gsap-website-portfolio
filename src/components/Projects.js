@@ -40,7 +40,9 @@ const Projects = () => {
   const fillAboutBtnRef = useRef()
 
   const [titleArrayRefs, setTitleArrayRefs] = useArrayRef()
+  const [descriptionArrayRefs, setDescriptionArrayRefs] = useArrayRef()
   const [projectsArrayRefs, setProjectsArrayRef] = useArrayRef()
+  const [imagesArrayRefs, setImagesArrayRef] = useArrayRef()
 
   const onMouseEnter = () => {
     gsap.timeline({ defaults: { duration: 0.5 } }).to(fillAboutBtnRef.current, {
@@ -77,30 +79,94 @@ const Projects = () => {
     })
   }
 
-  useEffect(() => {
-    // console.log(triggerRef.current.scrollWidth)
-    // console.log(window.innerWidth)
-    // console.log(triggerRef.current.offsetWidth)
-    let sections = gsap.utils.toArray(".projects .projects-container .project")
+  const scrollTween = useRef()
 
-    gsap.to(sections, {
-      xPercent: -100 * (sections.length - 1),
+  useEffect(() => {
+    const totalProjects = projectsArrayRefs.current.length
+    // gsap.set([projectsArrayRefs].current, { autoAlpha: 0 })
+
+    scrollTween.current = gsap.to(projectsArrayRefs.current, {
+      xPercent: -100 * (totalProjects - 1),
       ease: "none",
       scrollTrigger: {
         trigger: triggerRef.current,
         pin: true,
-        start: "top top",
-        end: () => "+=" + triggerRef.current.offsetWidth,
-        snap: 1 / (sections.length - 1),
-        // start: "0% 0%",
-        // end: () => "+=" + triggerRef.current.scrollWidth - window.innerWidth,
-        scrub: true,
-        anticipatePin: 1,
-        markers: true,
+        scrub: 1.3,
+        snapTo: 1 / (totalProjects.length - 1),
+        end: () => "+=" + triggerRef.current.scrollWidth - window.innerWidth,
       },
     })
   }, [])
 
+  useEffect(() => {
+    projectsArrayRefs.current.forEach((project, index) => {
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: project,
+            start: "left 50%",
+            end: () => "+=" + project.offsetWidth,
+            toggleActions: "play play play reverse",
+            containerAnimation: scrollTween.current,
+            markers: true,
+            id: `project-${index + 1}`,
+          },
+        })
+        .from(
+          project,
+          {
+            autoAlpha: 0,
+          },
+          {
+            autoAlpha: 1,
+            duration: 1,
+          }
+        )
+      // .fromTo(
+      //   titleArrayRefs.current,
+      //   {
+      //     yPercent: 130,
+      //     autoAlpha: 0,
+      //   },
+      //   {
+      //     yPercent: 0,
+      //     autoAlpha: 1,
+      //     duration: 1.3,
+      //     ease: "power3.out",
+      //     // stagger: 0.13,
+      //   },
+      //   0
+      // )
+      // .fromTo(
+      //   descriptionArrayRefs.current,
+      //   {
+      //     yPercent: 220,
+      //     autoAlpha: 0,
+      //   },
+      //   {
+      //     ease: "power3.out",
+      //     duration: 1.3,
+      //     stagger: 0.13,
+      //     autoAlpha: 1,
+      //     yPercent: 0,
+      //   },
+      //   0
+      // )
+      // .fromTo(
+      //   imagesArrayRefs.current,
+      //   { height: 0, autoAlpha: 0, scale: 2.2, yPercent: -22 },
+      //   {
+      //     height: "100%",
+      //     ease: "power3.inOut",
+      //     duration: 1.3,
+      //     autoAlpha: 1,
+      //     scale: 1,
+      //     yPercent: 0,
+      //   },
+      //   0
+      // )
+    })
+  }, [])
   return (
     <Wrapper>
       <div className="row wrapper">
@@ -126,26 +192,30 @@ const Projects = () => {
           </button>
         </article>
       </div>
-      <div className="projects wrapper">
+      <div className="projects wrapper" ref={triggerRef}>
         <h6>recent work</h6>
-        <ul className="projects-container" ref={triggerRef}>
+        <div className="projects-container">
           {featuredProjects.map(featureProject => {
             const { id, projectUrl, title, image, tag, description } =
               featureProject
             const pathToImage = getImage(image)
             return (
-              <li key={id} className="project" ref={setProjectsArrayRef}>
-                <div className="title" ref={setTitleArrayRefs}>
-                  <h4>{title}</h4>
-                  <p>{description}</p>
+              <article key={id} className="project" ref={setProjectsArrayRef}>
+                <div className="title active">
+                  <h4 ref={setTitleArrayRefs}>{title}</h4>
+                  <p ref={setDescriptionArrayRefs}>{description}</p>
                 </div>
-                <div className="img-container">
-                  <GatsbyImage image={pathToImage} alt={title} />
+                <div className="img-container" ref={setImagesArrayRef}>
+                  <GatsbyImage
+                    image={pathToImage}
+                    alt={title}
+                    className="project-image"
+                  />
                 </div>
-              </li>
+              </article>
             )
           })}
-        </ul>
+        </div>
       </div>
     </Wrapper>
   )
@@ -228,62 +298,42 @@ const Wrapper = styled.section`
     }
   }
   .projects {
-    position: relative;
-    margin-top: 15rem;
+    margin-top: 10rem;
     height: 100vh;
-
     /* overscroll-behavior: none; */
-    /* width: 100vw; */
-
+    /* position: relative; */
+    h6 {
+    }
     .projects-container {
-      /* display: flex;
+      height: 100vh;
+      /* padding: 10vh 0; */
+      width: 400%;
+      display: flex;
       flex-wrap: nowrap;
-      white-space: nowrap;
-      width: 400%; */
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 100%;
-      /* width: 100%; */
-      /* height: 80vh; */
-      padding: 10vh 0;
-      overscroll-behavior: none;
-      /* overflow: hidden; */
-      aspect-ratio: 16/9;
-      height: 100%;
-      /* display: grid;
-      grid-template-columns: 20vw 1fr 200px; */
-      width: 100vw;
 
+      /* overscroll-behavior: none; */
       .project {
-        position: relative;
-        display: grid;
-        grid-template-columns: 1.2fr 2fr;
-        align-items: center;
-        will-change: transform;
-        height: 100%;
         width: 100%;
-        /* margin-right: 10rem; */
-        /* width: 100%;
-        height: 100%; */
+        height: 100%;
+        position: relative;
+        /* will-change: transform; */
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
 
         .title {
-          position: relative;
-          z-index: 10;
-
           h4 {
-            font-size: clamp(1.4rem, 4.2vw, 6rem);
-            letter-spacing: 0.02rem;
-            margin-bottom: 0.8rem;
           }
           p {
-            font-size: clamp(0.6rem, 1.2vw, 1.4rem);
-            letter-spacing: 0.02rem;
           }
         }
         .img-container {
-          position: absolute;
-          top: 10%;
-          right: 0;
+          /* visibility: hidden; */
+          .project-img {
+            /* visibility: hidden; */
+          }
         }
       }
     }

@@ -23,6 +23,7 @@ body {
   overflow-x: hidden;
   position: relative;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 p {
@@ -70,3 +71,6 @@ small,
   width: 95vw;
   margin: 0 auto;
 }
+/* .active {
+  background-color: black;
+} */
